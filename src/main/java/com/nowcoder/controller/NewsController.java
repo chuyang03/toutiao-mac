@@ -33,12 +33,12 @@ public class NewsController {
 //    @Autowired
 //    private AliService aliService;
 //
-//    @Autowired
-//    private QiniuService qiniuService;
-//
-//    @Autowired
-//    private HostHolder hostHolder;
-//
+    @Autowired
+    private QiniuService qiniuService;
+
+    @Autowired
+    private HostHolder hostHolder;
+
 //    @Autowired
 //    private CommentService commentService;
 //
@@ -73,31 +73,31 @@ public class NewsController {
 //        model.addAttribute("owner", userService.getUser(news.getUserId()));
 //        return "detail";
 //    }
-//
-//    @RequestMapping(path = {"/user/addNews/"}, method = {RequestMethod.POST})
-//    @ResponseBody
-//    public String addNews(@RequestParam("image") String image,
-//                          @RequestParam("title") String title,
-//                          @RequestParam("link") String link) {
-//        try {
-//            News news = new News();
-//            news.setCreatedDate(new Date());
-//            news.setTitle(title);
-//            news.setImage(image);
-//            news.setLink(link);
-//            if (hostHolder.getUser() != null) {
-//                news.setUserId(hostHolder.getUser().getId());
-//            } else {
-//                // 设置一个匿名用户
-//                news.setUserId(3);
-//            }
-//            newsService.addNews(news);
-//            return ToutiaoUtil.getJSONString(0);
-//        } catch (Exception e) {
-//            logger.error("添加资讯失败" + e.getMessage());
-//            return ToutiaoUtil.getJSONString(1, "发布失败");
-//        }
-//    }
+
+    @RequestMapping(path = {"/user/addNews/"}, method = {RequestMethod.POST})
+    @ResponseBody
+    public String addNews(@RequestParam("image") String image,
+                          @RequestParam("title") String title,
+                          @RequestParam("link") String link) {
+        try {
+            News news = new News();
+            news.setCreatedDate(new Date());
+            news.setTitle(title);
+            news.setImage(image);
+            news.setLink(link);
+            if (hostHolder.getUser() != null) {
+                news.setUserId(hostHolder.getUser().getId());
+            } else {
+                // 设置一个匿名用户
+                news.setUserId(3);
+            }
+            newsService.addNews(news);
+            return ToutiaoUtil.getJSONString(0);
+        } catch (Exception e) {
+            logger.error("添加资讯失败" + e.getMessage());
+            return ToutiaoUtil.getJSONString(1, "发布失败");
+        }
+    }
 //
 //    @RequestMapping(path = {"/addComment"}, method = {RequestMethod.POST})
 //    public String addComment(@RequestParam("newsId") int newsId,
@@ -138,25 +138,25 @@ public class NewsController {
 //            return ToutiaoUtil.getJSONString(1, "上传失败");
 //        }
 //    }
-//
-//    @RequestMapping("/uploadQiniu/")
-//    @ResponseBody
-//    //这里使用阿里oss，有空把七牛云搞一下
-//    public String uploadQiniu(@RequestParam("file") MultipartFile file) {
-//        try {
-//            String fileUrl = qiniuService.saveImage(file);
-//            if (fileUrl == null) {
-//                //先错误后正确
-//                return ToutiaoUtil.getJSONString(1, "上传图片失败");
-//            }
-//            return ToutiaoUtil.getJSONString(0, fileUrl);
-//        } catch (IOException e) {
-//            logger.error("上传失败" + e.getMessage());
-//            return ToutiaoUtil.getJSONString(1, "上传失败");
-//        }
-//    }
 
-    //上传单张图片
+    //更改上传图片的方式在这里  static/scripts/main/component/popupUpload.js   找到js-upload-btn，修改url
+    @RequestMapping("/uploadQiniu/")
+    @ResponseBody
+    public String uploadQiniu(@RequestParam("file") MultipartFile file) {
+        try {
+            String fileUrl = qiniuService.saveImage(file);
+            if (fileUrl == null) {
+                //先错误后正确
+                return ToutiaoUtil.getJSONString(1, "上传图片失败");
+            }
+            return ToutiaoUtil.getJSONString(0, fileUrl);
+        } catch (IOException e) {
+            logger.error("上传失败" + e.getMessage());
+            return ToutiaoUtil.getJSONString(1, "上传失败");
+        }
+    }
+
+    //本地上传单张图片
     @RequestMapping("/uploadImage/")
     @ResponseBody
     public String uploadImage(@RequestParam("file") MultipartFile file) {

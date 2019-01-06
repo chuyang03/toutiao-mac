@@ -42,10 +42,10 @@ public class NewsService {
         return newsList;
     }
 
-//    public int addNews(News news) {
-//        newsDAO.addNews(news);
-//        return news.getId();
-//    }
+    public int addNews(News news) {
+        newsDAO.addNews(news);
+        return news.getId();
+    }
 //
 //    public News getById(int newsId) {
 //        return newsDAO.getById(newsId);
