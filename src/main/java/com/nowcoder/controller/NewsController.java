@@ -39,40 +39,41 @@ public class NewsController {
     @Autowired
     private HostHolder hostHolder;
 
-//    @Autowired
-//    private CommentService commentService;
-//
-//    @Autowired
-//    private UserService userService;
-//
+    @Autowired
+    private CommentService commentService;
+
+    @Autowired
+    private UserService userService;
+
 //    @Autowired
 //    private LikeService likeService;
-//
-//    @RequestMapping(path = {"/news/{newsId}"}, method = {RequestMethod.GET})
-//    public String newsDetail(@PathVariable("newsId") int newsId, Model model) {
-//        News news = newsService.getById(newsId);
-//        if (news != null) {
+
+    //显示新闻资讯的详细信息以及下面的评论显示
+    @RequestMapping(path = {"/news/{newsId}"}, method = {RequestMethod.GET})
+    public String newsDetail(@PathVariable("newsId") int newsId, Model model) {
+        News news = newsService.getById(newsId);
+        if (news != null) {
 //            int localUserId = hostHolder.getUser() != null ? hostHolder.getUser().getId() : 0;
 //            if (localUserId != 0) {
 //                model.addAttribute("like", likeService.getLikeStatus(localUserId, EntityType.ENTITY_NEWS, news.getId()));
 //            } else {
 //                model.addAttribute("like", 0);
 //            }
-//            // 评论
-//            List<Comment> comments = commentService.getCommentsByEntity(news.getId(), EntityType.ENTITY_NEWS);
-//            List<ViewObject> commentVOs = new ArrayList<ViewObject>();
-//            for (Comment comment : comments) {
-//                ViewObject vo = new ViewObject();
-//                vo.set("comment", comment);
-//                vo.set("user", userService.getUser(comment.getUserId()));
-//                commentVOs.add(vo);
-//            }
-//            model.addAttribute("comments", commentVOs);
-//        }
-//        model.addAttribute("news", news);
-//        model.addAttribute("owner", userService.getUser(news.getUserId()));
-//        return "detail";
-//    }
+            // 评论  news.getId()这个是新闻资讯的id，对应到每条资讯下面有很多评论，评论的entityID对应到新闻资讯的id
+            List<Comment> comments = commentService.getCommentsByEntity(news.getId(), EntityType.ENTITY_NEWS);
+            List<ViewObject> commentVOs = new ArrayList<ViewObject>();
+            for (Comment comment : comments) {
+                ViewObject vo = new ViewObject();
+                vo.set("comment", comment);
+                vo.set("user", userService.getUser(comment.getUserId()));
+                commentVOs.add(vo);
+            }
+            model.addAttribute("comments", commentVOs);
+        }
+        model.addAttribute("news", news);
+        model.addAttribute("owner", userService.getUser(news.getUserId()));
+        return "detail";
+    }
 
     @RequestMapping(path = {"/user/addNews/"}, method = {RequestMethod.POST})
     @ResponseBody
@@ -98,29 +99,31 @@ public class NewsController {
             return ToutiaoUtil.getJSONString(1, "发布失败");
         }
     }
-//
-//    @RequestMapping(path = {"/addComment"}, method = {RequestMethod.POST})
-//    public String addComment(@RequestParam("newsId") int newsId,
-//                             @RequestParam("content") String content) {
-//        try {
-//            Comment comment = new Comment();
-//            comment.setUserId(hostHolder.getUser().getId());
-//            comment.setContent(content);
-//            comment.setEntityType(EntityType.ENTITY_NEWS);
-//            comment.setEntityId(newsId);
-//            comment.setCreatedDate(new Date());
-//            comment.setStatus(0);
-//            commentService.addComment(comment);
-//
-//            // 更新评论数量，以后用异步实现
-//            int count = commentService.getCommentCount(comment.getEntityId(), comment.getEntityType());
-//            newsService.updateCommentCount(comment.getEntityId(), count);
-//
-//        } catch (Exception e) {
-//            logger.error("提交评论错误" + e.getMessage());
-//        }
-//        return "redirect:/news/" + String.valueOf(newsId);
-//    }
+
+    //添加评论
+    @RequestMapping(path = {"/addComment"}, method = {RequestMethod.POST})
+    public String addComment(@RequestParam("newsId") int newsId,
+                             @RequestParam("content") String content) {
+        try {
+            Comment comment = new Comment();
+            //登陆用户的评论
+            comment.setUserId(hostHolder.getUser().getId());
+            comment.setContent(content);
+            comment.setEntityType(EntityType.ENTITY_NEWS);
+            comment.setEntityId(newsId);
+            comment.setCreatedDate(new Date());
+            comment.setStatus(0);
+            commentService.addComment(comment);
+
+            // 更新评论数量，以后用异步实现
+            int count = commentService.getCommentCount(comment.getEntityId(), comment.getEntityType());
+            newsService.updateCommentCount(comment.getEntityId(), count);
+
+        } catch (Exception e) {
+            logger.error("提交评论错误" + e.getMessage());
+        }
+        return "redirect:/news/" + String.valueOf(newsId);
+    }
 
 //    @RequestMapping("/uploadImage/")
 //    @ResponseBody

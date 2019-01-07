@@ -46,11 +46,12 @@ public class NewsService {
         newsDAO.addNews(news);
         return news.getId();
     }
-//
-//    public News getById(int newsId) {
-//        return newsDAO.getById(newsId);
-//    }
-//
+
+    //根据id查询新闻
+    public News getById(int newsId) {
+        return newsDAO.getById(newsId);
+    }
+
     //上传文件
     public String saveImage(MultipartFile file) throws IOException {
         //获得xxx.jpg文件 " . "的索引位置
@@ -82,12 +83,13 @@ public class NewsService {
         }
         return sb.toString();
     }
-//
-//    public int updateCommentCount(int id, int count) {
-//        return newsDAO.updateCommentCount(id, count);
-//    }
-//
-//    public int updateLikeCount(int id, int count) {
-//        return newsDAO.updateLikeCount(id, count);
-//    }
+
+    //更新每个新闻资讯的评论数
+    public int updateCommentCount(int id, int count) {
+        return newsDAO.updateCommentCount(id, count);
+    }
+
+    public int updateLikeCount(int id, int count) {
+        return newsDAO.updateLikeCount(id, count);
+    }
 }
