@@ -22,6 +22,8 @@ public interface MessageDAO {
             ") values (#{fromId},#{toId},#{content},#{hasRead},#{conversationId},#{createdDate})"})
     int addMessage(Message message);
 
+    //内嵌的查询表，根据传入登陆用户id查询出来所有和我通信的信息（我发送的和发送给我的），并将信息列表安装message的id安照降序排列
+    //在查询出来的表上面根据会话id分组，显示每个分组的最新消息，以及每个分组的消息条数
     @Select({"select ",INSERT_FIELDS ,",count(id) as id from ( select * from ", TABLE_NAME, " where from_id=#{userId} or to_id=#{userId} order by id desc) tt group by conversation_id order by id desc limit #{offset},#{limit}"})
     List<Message> getConversationList(@Param("userId") int userId, @Param("offset") int offset, @Param("limit") int limit);
 

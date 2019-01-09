@@ -35,10 +35,13 @@ public class MessageController {
     public String conversationDetail(Model model, @RequestParam("conversationId") String conversationId) {
         try {
             List<ViewObject> messages = new ArrayList<>();
+            //根据通信双方的id查询出来通信的内容
             List<Message> messageList = messageService.getConversationDetail(conversationId, 0, 10);
+            //遍历所有通信内容
             for (Message msg : messageList) {
                 ViewObject vo = new ViewObject();
                 vo.set("message", msg);
+                //将发送消息的人的名字头像展示出来
                 User user = userService.getUser(msg.getFromId());
                 if (user == null) {
                     continue;
@@ -59,11 +62,11 @@ public class MessageController {
     @RequestMapping(path = {"/msg/list"}, method = {RequestMethod.GET})
     public String conversationList(Model model) {
         try {
+            //获取登陆用户的id
             int localUserId = hostHolder.getUser().getId();
             List<ViewObject> conversations = new ArrayList<>();
             List<Message> messageList = messageService.getConversationList(localUserId, 0, 10);
             for (Message msg : messageList) {
-                //System.out.println(msg);
                 ViewObject vo = new ViewObject();
                 vo.set("conversation", msg);
                 //判断消息是别人发给我的还是我发给别人的，如果是我发出去的，那目标id是toId
@@ -97,6 +100,7 @@ public class MessageController {
         msg.setCreatedDate(new Date());
         msg.setToId(toId);
         msg.setFromId(fromId);
+        //  message的会话id，把用户id小的放在前面，比如 2_12
         msg.setConversationId(fromId < toId ? String.format("%d_%d", fromId, toId) :
                 String.format("%d_%d", toId, fromId));
         messageService.addMessage(msg);

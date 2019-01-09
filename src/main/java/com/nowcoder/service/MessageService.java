@@ -27,7 +27,7 @@ public class MessageService {
     }
 
     public List<Message> getConversationDetail(String conversationId, int offset, int limit) {
-        // conversation的总条数存在id里
+        // 根据会话id查询出会话的详细信息
         return messageDAO.getConversationDetail(conversationId, offset, limit);
     }
 

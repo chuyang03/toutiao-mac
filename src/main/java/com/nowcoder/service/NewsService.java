@@ -89,6 +89,7 @@ public class NewsService {
         return newsDAO.updateCommentCount(id, count);
     }
 
+    //更新喜欢还是不喜欢的数量
     public int updateLikeCount(int id, int count) {
         return newsDAO.updateLikeCount(id, count);
     }

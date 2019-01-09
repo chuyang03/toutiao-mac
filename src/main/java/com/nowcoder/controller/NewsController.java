@@ -45,26 +45,29 @@ public class NewsController {
     @Autowired
     private UserService userService;
 
-//    @Autowired
-//    private LikeService likeService;
+    @Autowired
+    private LikeService likeService;
 
     //显示新闻资讯的详细信息以及下面的评论显示
     @RequestMapping(path = {"/news/{newsId}"}, method = {RequestMethod.GET})
     public String newsDetail(@PathVariable("newsId") int newsId, Model model) {
+        //根据新闻资讯id查询出一条新闻
         News news = newsService.getById(newsId);
         if (news != null) {
-//            int localUserId = hostHolder.getUser() != null ? hostHolder.getUser().getId() : 0;
-//            if (localUserId != 0) {
-//                model.addAttribute("like", likeService.getLikeStatus(localUserId, EntityType.ENTITY_NEWS, news.getId()));
-//            } else {
-//                model.addAttribute("like", 0);
-//            }
+            //在新闻详细信息界面实现点赞功能，只是判断当前用户是否对这条信息点过赞，从而在这个界面显示
+            int localUserId = hostHolder.getUser() != null ? hostHolder.getUser().getId() : 0;
+            if (localUserId != 0) {
+                model.addAttribute("like", likeService.getLikeStatus(localUserId, EntityType.ENTITY_NEWS, news.getId()));
+            } else {
+                model.addAttribute("like", 0);
+            }
             // 评论  news.getId()这个是新闻资讯的id，对应到每条资讯下面有很多评论，评论的entityID对应到新闻资讯的id
             List<Comment> comments = commentService.getCommentsByEntity(news.getId(), EntityType.ENTITY_NEWS);
             List<ViewObject> commentVOs = new ArrayList<ViewObject>();
             for (Comment comment : comments) {
                 ViewObject vo = new ViewObject();
                 vo.set("comment", comment);
+                //设置评论的人是谁
                 vo.set("user", userService.getUser(comment.getUserId()));
                 commentVOs.add(vo);
             }
